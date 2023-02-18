@@ -5,7 +5,7 @@ from typing import Optional
 from utils.setup import SetupApplication
 
 
-class Client(SetupApplication):
+class Server(SetupApplication):
     def __init__(self):
         super().__init__()
 

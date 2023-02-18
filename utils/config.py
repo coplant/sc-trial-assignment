@@ -10,3 +10,4 @@ class Connection:
 @dataclass
 class Config:
     connection: Connection
+    name: str

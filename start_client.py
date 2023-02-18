@@ -1,5 +1,4 @@
 import asyncio
-from pathlib import Path
 
 from client.client import Client
 from utils.logger import BASE_DIR
