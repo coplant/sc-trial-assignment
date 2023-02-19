@@ -25,5 +25,7 @@ class AsyncLogger:
         self.logger.info("Logging started")
 
     def stop(self):
-        self.logger.info("Logging stopped")
-        self.listener.stop()
+        if self.logger:
+            self.logger.info("Logging stopped")
+        if self.listener:
+            self.listener.stop()

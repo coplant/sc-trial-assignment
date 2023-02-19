@@ -9,12 +9,11 @@ class Server(SetupApplication):
     def __init__(self):
         super().__init__()
 
-    async def run(self):  # TODO: Logging
+    async def run(self):
         server = await asyncio.start_server(
             self.handle_echo,
             host=self.config.connection.host,
             port=self.config.connection.port
-
         )
 
         addrs = ', '.join(str(sock.getsockname()) for sock in server.sockets)

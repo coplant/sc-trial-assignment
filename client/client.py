@@ -18,7 +18,6 @@ class Client(SetupApplication):
 
     # TODO: JSON?
     # TODO: Reversed Polish Notation (class-solver?)
-    # FIXME: OSError - incorrect connection address
 
     async def get_menu(self):
         menu = None
@@ -50,9 +49,18 @@ class Client(SetupApplication):
         )
 
         await self.get_menu()
-        if self.data:
-            print(self.data)
-        expression = MathExpression()
+        if not self.data:
+            self.logger.logger.error("No data found")
+            return
+        expression: MathExpression = MathExpression(self.data)
+
+        # TODO: expression parser
+        # try:
+        #     to = MathExpression(" 420  192     - ").evaluate()
+        #     print(to)
+        # except ValueError as exception:
+        #     print(f"{exception!r}")
+        #     self.logger.logger.error(f"{exception!r}")
 
         # send data to server
         message = '12'
@@ -60,7 +68,7 @@ class Client(SetupApplication):
         writer.write(message.encode())
         await writer.drain()
 
-        #recv data from server
+        # recv data from server
         data = await reader.read(100)
         print(f'Received: {data.decode()!r}')
         print('Close the connection')

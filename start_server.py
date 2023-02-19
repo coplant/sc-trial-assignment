@@ -14,7 +14,6 @@ if __name__ == "__main__":
     try:
         asyncio.run(main=start_app())
     except KeyboardInterrupt:
-        application.logger.stop()
         print("\nServer stopped")
     except Exception as ex:
         print(f"\n{ex}")
