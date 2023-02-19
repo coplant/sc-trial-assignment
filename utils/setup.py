@@ -12,10 +12,6 @@ class SetupApplication:
         self.config: Optional[Config] = None
         self.logger: Optional[AsyncLogger] = None
 
-    def __del__(self):
-        if self.logger:
-            self.logger.stop()
-
     async def setup_app(self, config_path):
         await self._setup_config(config_path)
         await self._setup_logging()

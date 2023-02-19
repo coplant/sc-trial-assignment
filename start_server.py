@@ -5,10 +5,18 @@ from utils.logger import BASE_DIR
 
 
 async def start_app():
-    application: Server = Server()
     await application.setup_app(config_path=BASE_DIR / "server" / "config.cfg")
     await application.run()
 
 
+application: Server = Server()
 if __name__ == "__main__":
-    asyncio.run(start_app())
+    try:
+        asyncio.run(main=start_app())
+    except KeyboardInterrupt:
+        application.logger.stop()
+        print("\nServer stopped")
+    except Exception as ex:
+        print(f"\n{ex}")
+    finally:
+        application.logger.stop()
