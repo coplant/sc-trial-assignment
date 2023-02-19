@@ -7,6 +7,7 @@ from typing import Optional
 
 import aiofiles
 
+from utils.notation import MathExpression
 from utils.setup import SetupApplication
 
 
@@ -51,11 +52,15 @@ class Client(SetupApplication):
         await self.get_menu()
         if self.data:
             print(self.data)
-        message = ...
+        expression = MathExpression()
+
+        # send data to server
+        message = '12'
         print(f'Send: {message!r}')
         writer.write(message.encode())
         await writer.drain()
 
+        #recv data from server
         data = await reader.read(100)
         print(f'Received: {data.decode()!r}')
         print('Close the connection')
