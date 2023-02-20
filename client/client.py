@@ -1,13 +1,10 @@
 import asyncio
 import json
 
-import aioconsole
 from aioconsole import ainput, aprint
 from typing import Optional
 
 import aiofiles
-
-from utils.notation import MathExpression
 from utils.setup import SetupApplication
 
 
@@ -15,9 +12,6 @@ class Client(SetupApplication):
     def __init__(self):
         super().__init__()
         self.data: Optional[str] = None
-
-    # TODO: JSON?
-    # TODO: Reversed Polish Notation (class-solver?)
 
     async def get_menu(self):
         menu = None
@@ -31,10 +25,12 @@ class Client(SetupApplication):
             if menu == "1":
                 self.data = await ainput("Math expression: ")
             elif menu == "2":
-                path_file = await ainput("File path: ")
+                path_file: str = await ainput("File path: ")
                 try:
+                    path_file = path_file.strip().replace("'", "")
                     async with aiofiles.open(path_file, "r") as file:
                         self.data: str = await file.read()
+                        self.data = self.data.strip()
                 except Exception as message:
                     await aprint(message)
                     self.logger.logger.error(message)
@@ -42,7 +38,7 @@ class Client(SetupApplication):
             else:
                 menu = None
 
-    async def run(self):  # TODO: Logging
+    async def run(self):
         reader, writer = await asyncio.open_connection(
             host=self.config.connection.host,
             port=self.config.connection.port
@@ -52,25 +48,27 @@ class Client(SetupApplication):
         if not self.data:
             self.logger.logger.error("No data found")
             return
-        expression: MathExpression = MathExpression(self.data)
+        self.logger.logger.info(f"Input data: {self.data}")
 
-        # TODO: expression parser
-        # try:
-        #     to = MathExpression(" 420  192     - ").evaluate()
-        #     print(to)
-        # except ValueError as exception:
-        #     print(f"{exception!r}")
-        #     self.logger.logger.error(f"{exception!r}")
+        try:
+            to = {"expression": self.data}
+            writer.write(json.dumps(to).encode())
+            await writer.drain()
+            await aprint(f"Send: {json.dumps(to)}")
+            self.logger.logger.info(f"Send: {json.dumps(to)}")
+        except ValueError as exception:
+            self.logger.logger.error(f"{exception!r}")
+            print(f"{exception!r}")
 
-        # send data to server
-        message = '12'
-        print(f'Send: {message!r}')
-        writer.write(message.encode())
-        await writer.drain()
-
-        # recv data from server
         data = await reader.read(100)
-        print(f'Received: {data.decode()!r}')
-        print('Close the connection')
+        data = json.loads(data.decode())
+        await aprint(f"Received: {data}")
+        self.logger.logger.info(f"Received: {data}")
+
+        await aprint(f"Result: {data.get('result')}")
+        self.logger.logger.info(f"Result: {data.get('result')}")
+
+        await aprint("Close the connection")
+        self.logger.logger.info("Close the connection")
         writer.close()
         await writer.wait_closed()
